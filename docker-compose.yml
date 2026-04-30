@@ -1,0 +1,18 @@
+services:
+  chatbot:
+    build: .
+    container_name: chatbot-h-h
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      PORT: "3000"
+      # If you don't want WhatsApp initialized in Docker yet:
+      # SKIP_WHATSAPP_INIT: "1"
+    volumes:
+      - ./data:/app/data
+      - ./.wwebjs_auth:/app/.wwebjs_auth
+      - ./.wwebjs_cache:/app/.wwebjs_cache
+    restart: unless-stopped
+

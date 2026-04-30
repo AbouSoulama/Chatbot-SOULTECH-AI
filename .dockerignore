@@ -1,0 +1,9 @@
+node_modules
+npm-debug.log
+data
+.wwebjs_auth
+.wwebjs_cache
+.git
+.env
+*.sqlite
+

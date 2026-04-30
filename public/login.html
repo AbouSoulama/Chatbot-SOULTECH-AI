@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connexion · Soultech AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #040a07;
+        --ink-2: #0c1912;
+        --card: rgba(255, 255, 255, 0.06);
+        --card-border: rgba(255, 255, 255, 0.12);
+        --text: #f0fdf4;
+        --muted: #94a3a8;
+        --accent: #4ade80;
+        --accent-dim: rgba(74, 222, 128, 0.15);
+        --glow: rgba(52, 211, 153, 0.35);
+        --radius: 20px;
+        --radius-sm: 12px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+        color: var(--text);
+        background-color: var(--ink);
+        background-image:
+          radial-gradient(ellipse 120% 80% at 20% -20%, rgba(34, 197, 94, 0.35), transparent 50%),
+          radial-gradient(ellipse 90% 60% at 100% 10%, rgba(16, 185, 129, 0.2), transparent 45%),
+          radial-gradient(ellipse 70% 50% at 50% 100%, rgba(22, 101, 52, 0.5), transparent 55%),
+          linear-gradient(180deg, var(--ink) 0%, var(--ink-2) 100%);
+        display: grid;
+        place-items: center;
+        padding: 32px 20px;
+      }
+
+      .noise {
+        pointer-events: none;
+        position: fixed;
+        inset: 0;
+        opacity: 0.04;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+
+      .shell {
+        width: min(1040px, 100%);
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 28px;
+        align-items: stretch;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero {
+        padding: 2rem 2rem 2.25rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--card-border);
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2) inset, 0 32px 80px rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(20px);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        top: -40%;
+        right: -20%;
+        width: 70%;
+        height: 80%;
+        background: radial-gradient(circle, rgba(74, 222, 128, 0.12), transparent 70%);
+        pointer-events: none;
+      }
+
+      .mark {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-weight: 800;
+        font-size: 1.15rem;
+        color: #022c14;
+        background: linear-gradient(135deg, #86efac, #22c55e 55%, #16a34a);
+        box-shadow: 0 12px 40px var(--glow), 0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero h1 {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        margin: 1.25rem 0 0.5rem;
+        font-size: clamp(1.5rem, 2.5vw, 1.85rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1.15;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.65;
+        font-size: 0.95rem;
+        max-width: 36ch;
+        position: relative;
+        z-index: 1;
+      }
+
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1.5rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      .badge {
+        padding: 0.4rem 0.75rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--accent-dim);
+        color: #bbf7d0;
+        font-weight: 600;
+        font-size: 0.72rem;
+        letter-spacing: 0.02em;
+      }
+
+      .foot {
+        margin-top: 1.75rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--muted);
+        font-size: 0.78rem;
+        line-height: 1.5;
+        position: relative;
+        z-index: 1;
+      }
+
+      .foot strong {
+        color: #cbd5e1;
+        font-weight: 600;
+      }
+
+      .card {
+        padding: 2rem 2rem 1.75rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--card-border);
+        background: var(--card);
+        backdrop-filter: blur(24px);
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset, 0 40px 100px rgba(0, 0, 0, 0.5);
+      }
+
+      .card h2 {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        margin: 0 0 0.35rem;
+        font-size: 1.35rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+
+      .card .lede {
+        margin: 0 0 1.5rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+
+      label {
+        display: block;
+        margin: 1rem 0 0.4rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #cbd5e1;
+        letter-spacing: 0.02em;
+      }
+
+      input {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        outline: none;
+        font-size: 0.95rem;
+        color: var(--text);
+        background: rgba(0, 0, 0, 0.35);
+        transition: border-color 0.15s, box-shadow 0.15s;
+      }
+
+      input::placeholder {
+        color: #64748b;
+      }
+
+      input:focus {
+        border-color: rgba(74, 222, 128, 0.55);
+        box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.12);
+      }
+
+      .row {
+        margin-top: 1.5rem;
+      }
+
+      button {
+        width: 100%;
+        padding: 0.9rem 1rem;
+        border-radius: var(--radius-sm);
+        border: 0;
+        cursor: pointer;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #022c14;
+        background: linear-gradient(135deg, #86efac, #4ade80 45%, #22c55e);
+        box-shadow: 0 4px 20px var(--glow), 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+        transition: filter 0.15s, transform 0.15s;
+      }
+
+      button:hover {
+        filter: brightness(1.06);
+        transform: translateY(-1px);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      button:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .link {
+        display: inline-block;
+        margin-top: 1.25rem;
+        color: var(--accent);
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+
+      .link:hover {
+        text-decoration: underline;
+      }
+
+      .error {
+        margin-top: 1rem;
+        padding: 0.65rem 0.85rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid rgba(248, 113, 113, 0.35);
+        background: rgba(127, 29, 29, 0.35);
+        color: #fecaca;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: none;
+      }
+
+      @media (max-width: 900px) {
+        .shell {
+          grid-template-columns: 1fr;
+        }
+
+        .hero {
+          order: 2;
+        }
+
+        .card {
+          order: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+    <div class="shell">
+      <section class="hero">
+        <div class="mark">S</div>
+        <h1>Soultech AI</h1>
+        <p>
+          Accès sécurisé à votre console : WhatsApp, base de connaissances, conversations et paramètres du modèle.
+        </p>
+        <div class="badges">
+          <span class="badge">WhatsApp</span>
+          <span class="badge">RAG local</span>
+          <span class="badge">Multi-provider IA</span>
+        </div>
+        <div class="foot">
+          En production, définissez <strong>SESSION_SECRET</strong> dans votre fichier <code style="color: #86efac">.env</code>.
+        </div>
+      </section>
+
+      <section class="card" aria-label="Connexion">
+        <h2>Connexion</h2>
+        <p class="lede">Identifiants du tableau de bord administrateur.</p>
+        <form id="form">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            placeholder="vous@exemple.com"
+            required
+          />
+
+          <label for="password">Mot de passe</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            placeholder="••••••••"
+            required
+          />
+
+          <div class="row">
+            <button type="submit" id="submitBtn">Se connecter</button>
+          </div>
+          <div id="err" class="error"></div>
+        </form>
+
+        <a class="link" href="/register">Créer un compte</a>
+      </section>
+    </div>
+
+    <script>
+      async function api(url, options) {
+        const res = await fetch(url, {
+          ...options,
+          headers: {
+            "Content-Type": "application/json",
+            ...(options && options.headers ? options.headers : {}),
+          },
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || "Erreur API");
+        return data;
+      }
+
+      function showError(message) {
+        const el = document.getElementById("err");
+        el.textContent = message;
+        el.style.display = "block";
+      }
+
+      document.getElementById("form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        document.getElementById("err").style.display = "none";
+        const submitBtn = document.getElementById("submitBtn");
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Connexion…";
+        try {
+          const email = document.getElementById("email").value.trim();
+          const password = document.getElementById("password").value;
+          await api("/api/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
+          window.location.href = "/";
+        } catch (err) {
+          showError(err.message || "Connexion impossible");
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Se connecter";
+        }
+      });
+
+      (async () => {
+        try {
+          const me = await api("/api/auth/me");
+          if (me.user) window.location.href = "/";
+        } catch (_e) {}
+      })();
+    </script>
+  </body>
+</html>

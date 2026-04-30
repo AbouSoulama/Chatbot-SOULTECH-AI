@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Créer un compte · Soultech AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #040a07;
+        --ink-2: #0c1912;
+        --card: rgba(255, 255, 255, 0.06);
+        --card-border: rgba(255, 255, 255, 0.12);
+        --text: #f0fdf4;
+        --muted: #94a3a8;
+        --accent: #4ade80;
+        --accent-dim: rgba(74, 222, 128, 0.15);
+        --glow: rgba(52, 211, 153, 0.35);
+        --radius: 20px;
+        --radius-sm: 12px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+        color: var(--text);
+        background-color: var(--ink);
+        background-image:
+          radial-gradient(ellipse 100% 70% at 0% 0%, rgba(34, 197, 94, 0.28), transparent 52%),
+          radial-gradient(ellipse 80% 50% at 100% 30%, rgba(16, 185, 129, 0.18), transparent 50%),
+          radial-gradient(ellipse 60% 45% at 50% 110%, rgba(22, 101, 52, 0.45), transparent 55%),
+          linear-gradient(180deg, var(--ink) 0%, var(--ink-2) 100%);
+        display: grid;
+        place-items: center;
+        padding: 32px 20px;
+      }
+
+      .noise {
+        pointer-events: none;
+        position: fixed;
+        inset: 0;
+        opacity: 0.04;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+
+      .shell {
+        width: min(1020px, 100%);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+        align-items: stretch;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero {
+        padding: 2rem 2rem 2.25rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--card-border);
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2) inset, 0 32px 80px rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(20px);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        bottom: -30%;
+        left: -15%;
+        width: 65%;
+        height: 70%;
+        background: radial-gradient(circle, rgba(74, 222, 128, 0.1), transparent 70%);
+        pointer-events: none;
+      }
+
+      .mark {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-weight: 800;
+        font-size: 1.15rem;
+        color: #022c14;
+        background: linear-gradient(135deg, #86efac, #22c55e 55%, #16a34a);
+        box-shadow: 0 12px 40px var(--glow), 0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+        margin-bottom: 0.75rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero h1 {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        margin: 0 0 0.5rem;
+        font-size: clamp(1.45rem, 2.3vw, 1.75rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1.15;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.65;
+        font-size: 0.95rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hint {
+        margin-top: 1.35rem;
+        padding: 0.85rem 1rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid rgba(74, 222, 128, 0.25);
+        background: var(--accent-dim);
+        color: #bbf7d0;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hint strong {
+        color: #ecfdf5;
+      }
+
+      .card {
+        padding: 2rem 2rem 1.75rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--card-border);
+        background: var(--card);
+        backdrop-filter: blur(24px);
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset, 0 40px 100px rgba(0, 0, 0, 0.5);
+      }
+
+      .card h2 {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        margin: 0 0 0.35rem;
+        font-size: 1.35rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+
+      .card .lede {
+        margin: 0 0 1.25rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+
+      label {
+        display: block;
+        margin: 1rem 0 0.4rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #cbd5e1;
+        letter-spacing: 0.02em;
+      }
+
+      label:first-of-type {
+        margin-top: 0;
+      }
+
+      input {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        outline: none;
+        font-size: 0.95rem;
+        color: var(--text);
+        background: rgba(0, 0, 0, 0.35);
+        transition: border-color 0.15s, box-shadow 0.15s;
+      }
+
+      input::placeholder {
+        color: #64748b;
+      }
+
+      input:focus {
+        border-color: rgba(74, 222, 128, 0.55);
+        box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.12);
+      }
+
+      button {
+        width: 100%;
+        margin-top: 1.5rem;
+        padding: 0.9rem 1rem;
+        border-radius: var(--radius-sm);
+        border: 0;
+        cursor: pointer;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #022c14;
+        background: linear-gradient(135deg, #86efac, #4ade80 45%, #22c55e);
+        box-shadow: 0 4px 20px var(--glow), 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+        transition: filter 0.15s, transform 0.15s;
+      }
+
+      button:hover {
+        filter: brightness(1.06);
+        transform: translateY(-1px);
+      }
+
+      button:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .link {
+        display: inline-block;
+        margin-top: 1.25rem;
+        color: var(--accent);
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+
+      .link:hover {
+        text-decoration: underline;
+      }
+
+      .error {
+        margin-top: 1rem;
+        padding: 0.65rem 0.85rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid rgba(248, 113, 113, 0.35);
+        background: rgba(127, 29, 29, 0.35);
+        color: #fecaca;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: none;
+      }
+
+      @media (max-width: 900px) {
+        .shell {
+          grid-template-columns: 1fr;
+        }
+
+        .hero {
+          order: 2;
+        }
+
+        .card {
+          order: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+    <div class="shell">
+      <section class="hero">
+        <div class="mark">S</div>
+        <h1>Nouveau compte</h1>
+        <p>
+          Créez un accès administrateur au dashboard. Vous pouvez désactiver les inscriptions publiques avec
+          <code style="color: #86efac; font-size: 0.88em">ALLOW_REGISTER=0</code> dans votre environnement.
+        </p>
+        <div class="hint">
+          <strong>Politique mot de passe :</strong> 8 caractères minimum. Renforcez les règles en production si besoin.
+        </div>
+      </section>
+
+      <section class="card" aria-label="Inscription">
+        <h2>Inscription</h2>
+        <p class="lede">Renseignez vos identifiants pour finaliser la création du compte.</p>
+        <form id="form">
+          <label for="name">Nom (optionnel)</label>
+          <input id="name" name="name" type="text" autocomplete="name" placeholder="ex. Administrateur" />
+
+          <label for="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            placeholder="vous@exemple.com"
+            required
+          />
+
+          <label for="password">Mot de passe</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autocomplete="new-password"
+            placeholder="••••••••"
+            required
+          />
+
+          <button type="submit" id="submitBtn">Créer le compte</button>
+          <div id="err" class="error"></div>
+        </form>
+
+        <a class="link" href="/login">J’ai déjà un compte</a>
+      </section>
+    </div>
+
+    <script>
+      async function api(url, options) {
+        const res = await fetch(url, {
+          ...options,
+          headers: {
+            "Content-Type": "application/json",
+            ...(options && options.headers ? options.headers : {}),
+          },
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || "Erreur API");
+        return data;
+      }
+
+      function showError(message) {
+        const el = document.getElementById("err");
+        el.textContent = message;
+        el.style.display = "block";
+      }
+
+      document.getElementById("form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        document.getElementById("err").style.display = "none";
+        const submitBtn = document.getElementById("submitBtn");
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Création…";
+        try {
+          const name = document.getElementById("name").value.trim();
+          const email = document.getElementById("email").value.trim();
+          const password = document.getElementById("password").value;
+          await api("/api/auth/register", { method: "POST", body: JSON.stringify({ name, email, password }) });
+          window.location.href = "/";
+        } catch (err) {
+          showError(err.message || "Inscription impossible");
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Créer le compte";
+        }
+      });
+
+      (async () => {
+        try {
+          const me = await api("/api/auth/me");
+          if (me.user) window.location.href = "/";
+        } catch (_e) {}
+      })();
+    </script>
+  </body>
+</html>

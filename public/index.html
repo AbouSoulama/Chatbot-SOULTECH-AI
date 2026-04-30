@@ -1,0 +1,2297 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Workspace · Soultech AI</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-app: #f4f8f5;
+        --bg-main: #ffffff;
+        --sidebar: #0f3d20;
+        --sidebar-hover: rgba(34, 197, 94, 0.2);
+        --border: rgba(15, 61, 32, 0.14);
+        --surface: #ffffff;
+        --surface-2: #f7fff9;
+        --text: #0f172a;
+        --muted: #4b5563;
+        --accent: #16a34a;
+        --accent-soft: rgba(22, 163, 74, 0.14);
+        --whatsapp: #22c55e;
+        --danger: #dc2626;
+        --sidebar-width: 260px;
+        --topbar-h: 56px;
+        --radius: 14px;
+        --radius-sm: 10px;
+      }
+
+      * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--accent) rgba(255, 255, 255, 0.06);
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg-app);
+        color: var(--text);
+        font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+        font-size: 0.9375rem;
+      }
+
+      .app-layout {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        width: var(--sidebar-width);
+        flex-shrink: 0;
+        background: var(--sidebar);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        position: sticky;
+        top: 0;
+        align-self: flex-start;
+        height: 100vh;
+        z-index: 40;
+      }
+
+      .sidebar-brand {
+        padding: 1.1rem 1.15rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .brand-mark {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #15803d, #22c55e);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.95rem;
+        color: #fff;
+        box-shadow: 0 8px 24px rgba(22, 163, 74, 0.35);
+      }
+
+      .brand-title {
+        font-weight: 800;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+      }
+
+      .brand-sub {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      .sidebar-nav {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0.65rem 0.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .nav-section-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        padding: 0.75rem 0.75rem 0.35rem;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        width: 100%;
+        text-align: left;
+        border: 0;
+        background: transparent;
+        color: #cbd5e1;
+        padding: 0.55rem 0.75rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+      }
+
+      .nav-item:hover {
+        background: var(--sidebar-hover);
+        color: var(--text);
+      }
+
+      .nav-item.active {
+        background: var(--accent-soft);
+        color: #ffffff;
+        font-weight: 600;
+      }
+
+      .nav-item .nav-ico {
+        width: 1.25rem;
+        text-align: center;
+        opacity: 0.9;
+      }
+
+      .sidebar-foot {
+        padding: 0.85rem 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.75rem;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+
+      .sidebar-foot a {
+        color: #86efac;
+      }
+
+      .main-wrap {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(22, 163, 74, 0.12), transparent),
+          var(--bg-main);
+      }
+
+      .topbar {
+        min-height: var(--topbar-h);
+        height: auto;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem 1.25rem;
+        border-bottom: 1px solid var(--border);
+        background: rgba(15, 17, 23, 0.85);
+        backdrop-filter: blur(12px);
+        position: sticky;
+        top: 0;
+        z-index: 30;
+      }
+
+      .topbar-left h1 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin: 0;
+        letter-spacing: -0.02em;
+      }
+
+      .topbar-left .crumb {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      .topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        flex-wrap: nowrap;
+        justify-content: flex-end;
+      }
+
+      .main-scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.25rem;
+      }
+
+      .main-inner {
+        max-width: 1120px;
+        margin: 0 auto;
+      }
+
+      .view-panel {
+        display: none;
+        animation: fadeIn 0.2s ease;
+      }
+
+      .view-panel.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .subtitle {
+        color: var(--muted) !important;
+      }
+
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 1rem;
+        overflow: hidden;
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        padding: 1rem 1.15rem;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface-2);
+      }
+
+      .panel-title {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .panel-body {
+        padding: 1.15rem;
+      }
+
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.1rem 1.15rem;
+      }
+
+      .stat-card .label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .metric-value {
+        font-size: 1.65rem;
+        font-weight: 800;
+        margin-top: 0.35rem;
+        letter-spacing: -0.03em;
+      }
+
+      .hint-card {
+        border-left: 3px solid var(--accent);
+        padding: 0.75rem 1rem;
+        background: var(--accent-soft);
+        border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+        font-size: 0.85rem;
+        color: #166534;
+        margin-bottom: 1rem;
+      }
+
+      .form-control,
+      .form-select,
+      textarea {
+        background: rgba(15, 23, 42, 0.65) !important;
+        border: 1px solid var(--border) !important;
+        color: var(--text) !important;
+        border-radius: var(--radius-sm) !important;
+      }
+
+      .form-control:focus,
+      .form-select:focus,
+      textarea:focus {
+        border-color: rgba(22, 163, 74, 0.55) !important;
+        box-shadow: 0 0 0 0.2rem rgba(22, 163, 74, 0.18) !important;
+      }
+
+      .form-label {
+        color: #e2e8f0 !important;
+        font-weight: 600;
+        font-size: 0.8rem;
+      }
+
+      .form-control::placeholder {
+        color: #64748b;
+      }
+
+      .btn {
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        font-size: 0.875rem;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--accent), #7c3aed);
+        border: none;
+        color: #fff;
+      }
+
+      .btn-primary:hover {
+        filter: brightness(1.06);
+        color: #fff;
+      }
+
+      .btn-outline-light {
+        border-color: var(--border);
+        color: #e2e8f0;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .btn-outline-light:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.15);
+        color: #fff;
+      }
+
+      .btn-whatsapp {
+        background: rgba(37, 211, 102, 0.15);
+        border: 1px solid rgba(37, 211, 102, 0.45);
+        color: #bbf7d0;
+      }
+
+      .btn-whatsapp:hover {
+        background: rgba(37, 211, 102, 0.28);
+        color: #fff;
+      }
+
+      .btn-danger {
+        background: rgba(248, 113, 113, 0.2);
+        border: 1px solid rgba(248, 113, 113, 0.45);
+        color: #fecaca;
+      }
+
+      .btn-danger:hover {
+        background: rgba(248, 113, 113, 0.35);
+        color: #fff;
+      }
+
+      .btn-outline-danger {
+        border-color: rgba(248, 113, 113, 0.45);
+        color: #fecaca;
+        background: transparent;
+      }
+
+      .btn-outline-danger:hover {
+        background: rgba(248, 113, 113, 0.15);
+        color: #fff;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        border-radius: 999px;
+        padding: 0.4rem 0.85rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: 1px solid transparent;
+      }
+
+      .status-on {
+        background: rgba(37, 211, 102, 0.14);
+        border-color: rgba(37, 211, 102, 0.4);
+        color: #bbf7d0;
+      }
+
+      .status-off {
+        background: rgba(251, 191, 36, 0.12);
+        border-color: rgba(251, 191, 36, 0.35);
+        color: #fde68a;
+      }
+
+      .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      .table {
+        color: var(--text);
+        --bs-table-bg: transparent;
+        margin-bottom: 0;
+      }
+
+      .table > :not(caption) > * > * {
+        background: transparent !important;
+        border-bottom-color: var(--border);
+        padding: 0.65rem 0.5rem;
+      }
+
+      .table td,
+      .table th {
+        color: #e2e8f0 !important;
+        vertical-align: middle;
+      }
+
+      .table thead th {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted) !important;
+        font-weight: 700;
+        border-bottom-color: var(--border);
+      }
+
+      #logs {
+        background: rgba(15, 23, 42, 0.75) !important;
+        border: 1px solid var(--border) !important;
+        color: #e2e8f0 !important;
+        font-size: 0.78rem;
+        line-height: 1.45;
+      }
+
+      .qr-wrap {
+        display: flex;
+        justify-content: center;
+        padding: 0.5rem 0 0.25rem;
+      }
+
+      #qrImage {
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+      }
+
+      .sandbox-shell {
+        background: linear-gradient(180deg, #12151f 0%, #0f1117 100%);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+
+      .sandbox-toolbar {
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1rem;
+        border-bottom: 1px solid var(--border);
+        background: rgba(24, 28, 40, 0.6);
+      }
+
+      .sandbox-badge {
+        background: var(--accent-soft);
+        color: #166534;
+        border: 1px solid rgba(22, 163, 74, 0.35);
+        border-radius: 8px;
+        padding: 4px 10px;
+        font-weight: 700;
+        font-size: 0.8rem;
+      }
+
+      .sandbox-chat-header {
+        background: rgba(15, 23, 42, 0.5);
+        border-bottom: 1px solid var(--border);
+        padding: 0.65rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .sandbox-chat-user {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .avatar-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #16a34a, #22c55e);
+        color: #fff;
+        font-weight: 800;
+        font-size: 0.85rem;
+      }
+
+      .sandbox-chat-user .name {
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+
+      .sandbox-chat-user .state {
+        color: #86efac;
+        font-size: 0.78rem;
+      }
+
+      .sandbox-chat-wrap {
+        background: #0c0e14;
+        padding: 1rem;
+      }
+
+      .sandbox-chat {
+        background: transparent;
+        border: 0;
+        border-radius: var(--radius-sm);
+        padding: 6px;
+        min-height: 280px;
+        max-height: 440px;
+        overflow-y: auto;
+      }
+
+      .chat-row {
+        display: flex;
+        margin-bottom: 10px;
+      }
+
+      .chat-row.user {
+        justify-content: flex-end;
+      }
+
+      .chat-row.assistant {
+        justify-content: flex-start;
+      }
+
+      .chat-bubble {
+        max-width: 82%;
+        border-radius: 14px;
+        padding: 10px 14px;
+        white-space: pre-wrap;
+        line-height: 1.4;
+        position: relative;
+      }
+
+      .chat-row.user .chat-bubble {
+        background: linear-gradient(135deg, #22c55e, var(--whatsapp));
+        color: #052e16;
+        font-weight: 600;
+      }
+
+      .chat-row.assistant .chat-bubble {
+        background: rgba(30, 41, 59, 0.95);
+        border: 1px solid var(--border);
+        color: #f1f5f9;
+      }
+
+      .chat-day-sep {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px 14px;
+        margin: 4px auto 14px;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.2);
+        color: #cbd5e1;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .chat-time {
+        display: block;
+        font-size: 0.72rem;
+        opacity: 0.75;
+        margin-top: 4px;
+        text-align: right;
+      }
+
+      .sandbox-inputbar {
+        background: rgba(24, 28, 40, 0.85);
+        padding: 0.75rem 1rem;
+        border-top: 1px solid var(--border);
+      }
+
+      .sandbox-inputbar .input-group {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 4px;
+      }
+
+      .sandbox-inputbar .form-control {
+        border: 0 !important;
+        background: transparent !important;
+      }
+
+      .sandbox-inputbar .btn-primary {
+        border-radius: 8px;
+      }
+
+      a {
+        color: #15803d;
+      }
+
+      a:hover {
+        color: #166534;
+      }
+
+      .toast-container {
+        z-index: 1080;
+      }
+
+      @media (max-width: 991px) {
+        .topbar {
+          align-items: flex-start;
+        }
+
+        .topbar-actions {
+          flex-wrap: wrap;
+          justify-content: flex-start;
+        }
+
+        .sidebar {
+          position: fixed;
+          left: 0;
+          transform: translateX(-100%);
+          transition: transform 0.2s ease;
+        }
+
+        .sidebar.open {
+          transform: translateX(0);
+          box-shadow: 8px 0 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .main-wrap {
+          width: 100%;
+        }
+
+        .mobile-nav-toggle {
+          display: inline-flex !important;
+        }
+      }
+
+      .mobile-nav-toggle {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+      }
+
+      /* Design v2 premium: green light palette, crisp contrast */
+      :root {
+        --bg-app: #f5fbf6;
+        --bg-main: #ffffff;
+        --sidebar: #0d4a1d;
+        --sidebar-hover: rgba(132, 228, 96, 0.22);
+        --border: rgba(18, 76, 34, 0.14);
+        --surface: #ffffff;
+        --surface-2: #f2fbf4;
+        --text: #0b1324;
+        --muted: #4b5563;
+        --accent: #84e460;
+        --accent-soft: rgba(132, 228, 96, 0.24);
+        --danger: #dc2626;
+      }
+
+      body {
+        background: radial-gradient(circle at 10% -10%, rgba(132, 228, 96, 0.18), transparent 35%),
+          radial-gradient(circle at 90% 0%, rgba(132, 228, 96, 0.1), transparent 32%), var(--bg-app) !important;
+        color: var(--text) !important;
+      }
+
+      .main-wrap {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.98)) !important;
+      }
+
+      .sidebar {
+        background: linear-gradient(180deg, #0c4019 0%, #0f4d1f 45%, #115826 100%) !important;
+        border-right-color: rgba(132, 228, 96, 0.22) !important;
+      }
+
+      .brand-mark {
+        background: linear-gradient(135deg, #9aef74, #22c55e) !important;
+        color: #0b2a12 !important;
+        box-shadow: 0 10px 24px rgba(34, 197, 94, 0.36) !important;
+      }
+
+      .sidebar,
+      .sidebar .brand-title,
+      .sidebar .brand-sub,
+      .sidebar .nav-section-label,
+      .sidebar .sidebar-foot,
+      .sidebar .sidebar-foot a {
+        color: #e7fce8 !important;
+      }
+
+      .nav-item {
+        color: #ecfdf0 !important;
+        border: 1px solid transparent !important;
+      }
+
+      .nav-item:hover {
+        background: rgba(132, 228, 96, 0.14) !important;
+        border-color: rgba(132, 228, 96, 0.24) !important;
+      }
+
+      .nav-item.active {
+        background: linear-gradient(90deg, rgba(132, 228, 96, 0.35), rgba(132, 228, 96, 0.2)) !important;
+        border-color: rgba(132, 228, 96, 0.36) !important;
+        color: #ffffff !important;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06) !important;
+      }
+
+      .topbar {
+        background: rgba(255, 255, 255, 0.9) !important;
+        border-bottom: 1px solid rgba(18, 76, 34, 0.12) !important;
+        backdrop-filter: blur(9px) !important;
+      }
+
+      .topbar-left h1 {
+        color: #0f172a !important;
+        letter-spacing: -0.02em !important;
+      }
+
+      .topbar-left .crumb,
+      .subtitle {
+        color: #475569 !important;
+      }
+
+      .card-soft {
+        background: #ffffff !important;
+        border: 1px solid rgba(18, 76, 34, 0.1) !important;
+        box-shadow: 0 12px 34px rgba(12, 48, 23, 0.08), 0 2px 8px rgba(12, 48, 23, 0.05) !important;
+        border-radius: 16px !important;
+      }
+
+      .card-head {
+        background: linear-gradient(180deg, rgba(132, 228, 96, 0.16), rgba(255, 255, 255, 0.2)) !important;
+        border-bottom: 1px solid rgba(18, 76, 34, 0.1) !important;
+      }
+
+      .metric-value,
+      .metric-label,
+      .table td,
+      .table th,
+      .form-label,
+      .form-text {
+        color: #0f172a !important;
+      }
+
+      .form-control,
+      textarea,
+      select {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid rgba(18, 76, 34, 0.22) !important;
+        border-radius: 12px !important;
+      }
+
+      .form-control::placeholder,
+      textarea::placeholder {
+        color: #6b7280 !important;
+      }
+
+      .form-control:focus,
+      textarea:focus,
+      select:focus {
+        border-color: rgba(34, 197, 94, 0.85) !important;
+        box-shadow: 0 0 0 0.2rem rgba(132, 228, 96, 0.28) !important;
+      }
+
+      .btn {
+        border-radius: 10px !important;
+        font-weight: 600 !important;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #2ecc71, #16a34a) !important;
+        border-color: #16a34a !important;
+        color: #ffffff !important;
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(135deg, #16a34a, #15803d) !important;
+      }
+
+      .btn-outline-light {
+        background: #ffffff !important;
+        border-color: rgba(18, 76, 34, 0.25) !important;
+        color: #14532d !important;
+      }
+
+      .btn-outline-light:hover {
+        background: rgba(132, 228, 96, 0.14) !important;
+        border-color: rgba(18, 76, 34, 0.36) !important;
+      }
+
+      .btn-whatsapp {
+        background: rgba(132, 228, 96, 0.22) !important;
+        border-color: rgba(34, 197, 94, 0.48) !important;
+        color: #14532d !important;
+      }
+
+      .btn-whatsapp:hover {
+        background: rgba(34, 197, 94, 0.32) !important;
+        color: #0f172a !important;
+      }
+
+      .btn-danger,
+      .btn-outline-danger {
+        border-color: rgba(220, 38, 38, 0.56) !important;
+        color: #991b1b !important;
+      }
+
+      .btn-danger {
+        background: rgba(220, 38, 38, 0.12) !important;
+      }
+
+      .btn-danger:hover,
+      .btn-outline-danger:hover {
+        background: #dc2626 !important;
+        color: #ffffff !important;
+      }
+
+      .status-pill {
+        font-weight: 600 !important;
+      }
+
+      .status-pill.status-on {
+        background: rgba(34, 197, 94, 0.16) !important;
+        border-color: rgba(34, 197, 94, 0.4) !important;
+        color: #166534 !important;
+      }
+
+      .status-pill.status-off {
+        background: rgba(220, 38, 38, 0.12) !important;
+        border-color: rgba(220, 38, 38, 0.42) !important;
+        color: #991b1b !important;
+      }
+
+      .status-pill .dot {
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.8) !important;
+      }
+
+      .table {
+        --bs-table-bg: transparent !important;
+      }
+
+      .table > :not(caption) > * > * {
+        border-bottom-color: rgba(18, 76, 34, 0.12) !important;
+      }
+
+      .chat-bubble {
+        box-shadow: 0 8px 22px rgba(12, 48, 23, 0.09) !important;
+      }
+
+      /* Remove remaining dark blue zones and ensure readability everywhere */
+      .form-label {
+        color: #1f2937 !important;
+      }
+
+      .form-control,
+      .form-select,
+      textarea {
+        background: #ffffff !important;
+        color: #0b1324 !important;
+      }
+
+      #logs {
+        background: #f8fff9 !important;
+        border: 1px solid rgba(18, 76, 34, 0.16) !important;
+        color: #0b1324 !important;
+      }
+
+      .sandbox-shell {
+        background: #ffffff !important;
+        border: 1px solid rgba(18, 76, 34, 0.14) !important;
+      }
+
+      .sandbox-toolbar {
+        background: #f3fbf4 !important;
+      }
+
+      .sandbox-chat-header {
+        background: #eef9f0 !important;
+      }
+
+      .sandbox-chat-wrap {
+        background: #f7fdf8 !important;
+      }
+
+      .chat-row.assistant .chat-bubble {
+        background: #ffffff !important;
+        border: 1px solid rgba(18, 76, 34, 0.2) !important;
+        color: #0b1324 !important;
+      }
+
+      .chat-day-sep {
+        background: rgba(132, 228, 96, 0.2) !important;
+        color: #166534 !important;
+      }
+
+      .sandbox-inputbar {
+        background: #f3fbf4 !important;
+      }
+
+      .sandbox-inputbar .input-group {
+        background: #ffffff !important;
+        border: 1px solid rgba(18, 76, 34, 0.2) !important;
+      }
+
+      .table td,
+      .table th,
+      .table thead th {
+        color: #111827 !important;
+      }
+
+      .mobile-nav-toggle {
+        background: #ffffff !important;
+        color: #14532d !important;
+      }
+
+      /* Premium polish */
+      .brand-title {
+        font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif !important;
+        font-weight: 800 !important;
+        letter-spacing: -0.03em !important;
+      }
+
+      .topbar-left h1 {
+        font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif !important;
+        font-weight: 700 !important;
+      }
+
+      .sidebar-foot {
+        opacity: 0.78;
+        font-size: 0.7rem;
+        line-height: 1.5;
+        padding-top: 0.25rem;
+      }
+
+      .stat-card {
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.22s ease, box-shadow 0.22s ease;
+        box-shadow: 0 4px 22px rgba(12, 48, 23, 0.07), 0 1px 3px rgba(12, 48, 23, 0.05) !important;
+        border: 1px solid rgba(18, 76, 34, 0.1) !important;
+      }
+
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 3px;
+        background: linear-gradient(90deg, rgba(132, 228, 96, 0.55), rgba(34, 197, 94, 0.85), rgba(21, 128, 61, 0.45));
+        opacity: 0.9;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 14px 42px rgba(12, 48, 23, 0.12), 0 4px 12px rgba(12, 48, 23, 0.06) !important;
+      }
+
+      .hint-card {
+        border-left-width: 4px !important;
+        background: linear-gradient(105deg, rgba(132, 228, 96, 0.16), rgba(255, 255, 255, 0.92)) !important;
+        border-radius: var(--radius-sm) !important;
+        box-shadow: 0 8px 28px rgba(12, 48, 23, 0.06) !important;
+      }
+
+      .panel {
+        box-shadow: 0 8px 32px rgba(12, 48, 23, 0.06), 0 2px 8px rgba(12, 48, 23, 0.04) !important;
+        border-radius: 16px !important;
+      }
+
+      .topbar {
+        box-shadow: 0 1px 0 rgba(18, 76, 34, 0.06), 0 8px 32px rgba(15, 23, 42, 0.04) !important;
+      }
+
+      .overview-hero {
+        background: linear-gradient(135deg, #0f4d1f 0%, #13642a 35%, #1a7f36 100%);
+        border: 1px solid rgba(132, 228, 96, 0.28);
+        border-radius: 18px;
+        color: #ecfdf3;
+        padding: 1.2rem 1.25rem;
+        box-shadow: 0 18px 48px rgba(12, 48, 23, 0.22);
+        margin-bottom: 1rem;
+      }
+
+      .overview-hero h2 {
+        font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+        font-size: 1.25rem;
+        font-weight: 800;
+        margin: 0;
+      }
+
+      .overview-kpi {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        border: 1px solid rgba(132, 228, 96, 0.35);
+        background: rgba(255, 255, 255, 0.1);
+        color: #f0fdf4;
+        border-radius: 999px;
+        padding: 0.3rem 0.7rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+
+      .crm-actions {
+        display: flex;
+        gap: 0.35rem;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+      }
+
+      .crm-actions .btn {
+        white-space: nowrap;
+        padding-inline: 0.6rem;
+      }
+
+      #crmContactsTable td:last-child,
+      #crmContactsTable th:last-child {
+        min-width: 170px;
+      }
+
+      #crmContactsTable td {
+        word-break: break-word;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-layout">
+      <aside class="sidebar" id="appSidebar">
+        <div class="sidebar-brand">
+          <div class="d-flex align-items-center gap-2">
+            <div class="brand-mark">S</div>
+            <div>
+              <div class="brand-title">Soultech AI</div>
+              <div class="brand-sub">Workspace · WhatsApp</div>
+            </div>
+          </div>
+        </div>
+        <nav class="sidebar-nav" aria-label="Navigation principale">
+          <div class="nav-section-label">Menu</div>
+          <button type="button" class="nav-item active" data-view="overview">
+            <span class="nav-ico" aria-hidden="true">▣</span>
+            Aperçu
+          </button>
+          <button type="button" class="nav-item" data-view="whatsapp">
+            <span class="nav-ico" aria-hidden="true">◎</span>
+            Connexion WhatsApp
+          </button>
+          <button type="button" class="nav-item" data-view="knowledge">
+            <span class="nav-ico" aria-hidden="true">◇</span>
+            Base de connaissances
+          </button>
+          <button type="button" class="nav-item" data-view="conversations">
+            <span class="nav-ico" aria-hidden="true">☰</span>
+            Conversations
+          </button>
+          <button type="button" class="nav-item" data-view="crm">
+            <span class="nav-ico" aria-hidden="true">◈</span>
+            CRM Leads
+          </button>
+          <button type="button" class="nav-item" data-view="billing">
+            <span class="nav-ico" aria-hidden="true">¤</span>
+            Billing
+          </button>
+          <button type="button" class="nav-item" data-view="analytics">
+            <span class="nav-ico" aria-hidden="true">◔</span>
+            Analytics
+          </button>
+          <button type="button" class="nav-item" data-view="playground">
+            <span class="nav-ico" aria-hidden="true">⚡</span>
+            Playground
+          </button>
+          <button type="button" class="nav-item" data-view="settings">
+            <span class="nav-ico" aria-hidden="true">⚙</span>
+            Paramètres IA
+          </button>
+          <button type="button" class="nav-item" data-view="logs">
+            <span class="nav-ico" aria-hidden="true">▤</span>
+            Logs
+          </button>
+        </nav>
+        <div class="sidebar-foot">
+          Chatbot SOULTECH-AI · Console sécurisée. Session chiffrée côté serveur.
+        </div>
+      </aside>
+
+      <div class="main-wrap">
+        <header class="topbar">
+          <div class="topbar-left d-flex align-items-center gap-2">
+            <button type="button" class="mobile-nav-toggle" id="sidebarToggle" aria-label="Ouvrir le menu">☰</button>
+            <div>
+              <h1 id="mainViewTitle">Aperçu</h1>
+              <div class="crumb" id="mainViewCrumb">Tableau de bord · temps réel</div>
+            </div>
+          </div>
+          <div class="topbar-actions">
+            <select id="tenantSelect" class="form-select form-select-sm" style="min-width: 200px"></select>
+            <button type="button" class="btn btn-sm btn-outline-light" id="btnRefreshAll">Actualiser</button>
+            <button type="button" class="btn btn-sm btn-outline-light" id="btnLogout">Déconnexion</button>
+            <div id="statusPill" class="status-pill status-off">
+              <span class="dot"></span>
+              <span>En attente</span>
+            </div>
+          </div>
+        </header>
+
+        <main class="main-scroll">
+          <div class="main-inner">
+            <section class="view-panel active" data-view="overview">
+              <div class="overview-hero">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                  <div>
+                    <h2>Pilotage premium de ton assistant WhatsApp</h2>
+                    <p class="mb-0 mt-1" style="opacity: 0.92">
+                      Vue exécutive temps réel pour suivre connexion, contenu indexé et activité commerciale.
+                    </p>
+                  </div>
+                  <div id="overviewConnectionBadge" class="overview-kpi">● En attente</div>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                  <span class="overview-kpi">⚡ Temps réel</span>
+                  <span class="overview-kpi">🔐 Session sécurisée</span>
+                  <span class="overview-kpi" id="overviewLastRefresh">Dernière mise à jour: --:--</span>
+                </div>
+              </div>
+              <div class="hint-card mb-3">
+                Dashboard central : connexion WhatsApp, documents, CRM, analytics et opérations en un seul espace.
+              </div>
+              <div class="stat-grid">
+                <div class="stat-card">
+                  <div class="label">Bot WhatsApp</div>
+                  <div id="statusBot" class="metric-value" style="font-size: 1.1rem">…</div>
+                  <p id="statusDocs" class="subtitle mb-0 small mt-2"></p>
+                </div>
+                <div class="stat-card">
+                  <div class="label">Connexion</div>
+                  <p class="subtitle mb-0 small">
+                    Scanne le QR depuis <strong>Connexion WhatsApp</strong> si le statut est hors ligne.
+                  </p>
+                </div>
+                <div class="stat-card">
+                  <div class="label">Raccourcis</div>
+                  <p class="subtitle mb-0 small">
+                    <strong>Base</strong> : URL, fichiers, crawl.<br />
+                    <strong>Playground</strong> : test sans WhatsApp.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <section class="view-panel" data-view="whatsapp">
+              <div class="panel">
+                <div class="panel-header">
+                  <h2 class="panel-title">Connexion WhatsApp</h2>
+                  <div class="d-flex gap-2 flex-wrap">
+                    <button id="refreshQr" type="button" class="btn btn-sm btn-whatsapp">Actualiser QR</button>
+                    <button id="disconnectWa" type="button" class="btn btn-sm btn-danger">Déconnexion</button>
+                  </div>
+                </div>
+                <div class="panel-body">
+                  <p id="waHelp" class="subtitle mb-2">
+                    Si le bot n'est pas connecté, scanne le QR ci-dessous avec WhatsApp.
+                  </p>
+                  <p id="qrMeta" class="subtitle text-center mb-3"></p>
+                  <div class="qr-wrap">
+                    <img
+                      id="qrImage"
+                      alt="QR WhatsApp"
+                      class="bg-white p-2"
+                      style="width: 300px; height: 300px; object-fit: contain"
+                    />
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="view-panel" data-view="knowledge">
+              <div class="row g-3 mb-3">
+                <div class="col-lg-6">
+                  <div class="panel mb-0 h-100">
+                    <div class="panel-header">
+                      <h2 class="panel-title">Indexer une URL</h2>
+                    </div>
+                    <div class="panel-body">
+                      <div class="input-group">
+                        <input id="urlInput" class="form-control" placeholder="https://..." />
+                        <button id="addUrl" type="button" class="btn btn-primary">Indexer</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="panel mb-0 h-100">
+                    <div class="panel-header">
+                      <h2 class="panel-title">Indexer un fichier</h2>
+                    </div>
+                    <div class="panel-body">
+                      <div class="input-group">
+                        <input id="fileInput" type="file" class="form-control" />
+                        <button id="addFile" type="button" class="btn btn-primary">Indexer</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="panel mb-3">
+                <div class="panel-header">
+                  <h2 class="panel-title">Crawler site (domaine)</h2>
+                </div>
+                <div class="panel-body">
+                  <div class="row g-2 align-items-end">
+                    <div class="col-md-8">
+                      <label class="form-label">URL du site</label>
+                      <input id="siteInput" class="form-control" placeholder="https://monsite.com" />
+                    </div>
+                    <div class="col-md-2">
+                      <label class="form-label">Pages max</label>
+                      <input id="siteMaxPages" type="number" class="form-control" value="12" min="1" max="40" />
+                    </div>
+                    <div class="col-md-2 d-grid">
+                      <button id="addSite" type="button" class="btn btn-primary">Lancer</button>
+                    </div>
+                  </div>
+                  <p class="subtitle small mb-0 mt-2">Le crawler parcourt les pages internes du domaine (max 40).</p>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header">
+                  <h2 class="panel-title">Documents indexés</h2>
+                </div>
+                <div class="panel-body p-0">
+                  <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Titre</th>
+                          <th>Type</th>
+                          <th>Source</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="docsTable"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="view-panel" data-view="conversations">
+              <div class="panel">
+                <div class="panel-header">
+                  <h2 class="panel-title">Historique conversations</h2>
+                  <button id="clearAllConversations" type="button" class="btn btn-sm btn-danger">
+                    Vider tout l'historique
+                  </button>
+                </div>
+                <div class="panel-body p-0">
+                  <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                      <thead>
+                        <tr>
+                          <th>Contact (chat_id)</th>
+                          <th>Messages</th>
+                          <th>Dernier message</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="conversationsTable"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="view-panel" data-view="crm">
+              <div class="row g-3">
+                <div class="col-lg-5">
+                  <div class="panel h-100 mb-0">
+                    <div class="panel-header">
+                      <h2 class="panel-title">Nouveau lead</h2>
+                    </div>
+                    <div class="panel-body">
+                      <div class="mb-2">
+                        <label class="form-label">Téléphone</label>
+                        <input id="crmPhone" class="form-control" placeholder="+22670000000" />
+                      </div>
+                      <div class="mb-2">
+                        <label class="form-label">Nom</label>
+                        <input id="crmName" class="form-control" placeholder="Nom du prospect" />
+                      </div>
+                      <div class="mb-2">
+                        <label class="form-label">Tags</label>
+                        <input id="crmTags" class="form-control" placeholder="immobilier, chaud" />
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label">Statut</label>
+                        <select id="crmStatus" class="form-select">
+                          <option value="new">Nouveau</option>
+                          <option value="qualified">Qualifié</option>
+                          <option value="won">Converti</option>
+                          <option value="lost">Perdu</option>
+                        </select>
+                      </div>
+                      <div class="d-grid gap-2">
+                        <button id="crmCreateLead" type="button" class="btn btn-primary w-100">Créer lead</button>
+                        <button id="crmCancelEdit" type="button" class="btn btn-outline-light w-100 d-none">Annuler la modification</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-7">
+                  <div class="panel mb-3">
+                    <div class="panel-header">
+                      <h2 class="panel-title">Contacts</h2>
+                    </div>
+                    <div class="panel-body p-0">
+                      <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                          <thead>
+                            <tr>
+                              <th>Téléphone</th>
+                              <th>Nom</th>
+                              <th>Statut</th>
+                              <th>Tags</th>
+                              <th class="text-end">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody id="crmContactsTable"></tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="panel mb-0">
+                    <div class="panel-header">
+                      <h2 class="panel-title">Pipeline</h2>
+                    </div>
+                    <div class="panel-body p-0">
+                      <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                          <thead>
+                            <tr>
+                              <th>Lead</th>
+                              <th>Étape</th>
+                              <th>Valeur</th>
+                              <th>Action</th>
+                            </tr>
+                          </thead>
+                          <tbody id="crmDealsTable"></tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="view-panel" data-view="billing">
+              <div class="row g-3">
+                <div class="col-lg-5">
+                  <div class="panel h-100 mb-0">
+                    <div class="panel-header">
+                      <h2 class="panel-title">Abonnement</h2>
+                    </div>
+                    <div class="panel-body">
+                      <div class="mb-2">
+                        <label class="form-label">Provider</label>
+                        <select id="billingProvider" class="form-select">
+                          <option value="stripe">Stripe</option>
+                          <option value="mobilemoney">Mobile Money</option>
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label">Plan</label>
+                        <select id="billingPlan" class="form-select">
+                          <option value="starter">Starter</option>
+                          <option value="pro">Pro</option>
+                          <option value="business">Business</option>
+                        </select>
+                      </div>
+                      <button id="billingSubscribe" type="button" class="btn btn-primary w-100">Activer</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-7">
+                  <div class="panel mb-3">
+                    <div class="panel-header">
+                      <h2 class="panel-title">Souscription courante</h2>
+                    </div>
+                    <div class="panel-body">
+                      <div id="billingCurrent" class="subtitle small mb-0">Aucune donnée.</div>
+                    </div>
+                  </div>
+                  <div class="panel mb-0">
+                    <div class="panel-header">
+                      <h2 class="panel-title">Événements paiement</h2>
+                    </div>
+                    <div class="panel-body p-0">
+                      <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                          <thead>
+                            <tr>
+                              <th>Date</th>
+                              <th>Provider</th>
+                              <th>Type</th>
+                            </tr>
+                          </thead>
+                          <tbody id="billingEventsTable"></tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="view-panel" data-view="analytics">
+              <div class="panel mb-3">
+                <div class="panel-header">
+                  <h2 class="panel-title">Vue analytique</h2>
+                </div>
+                <div class="panel-body">
+                  <p class="subtitle mb-0">Métriques tenant en temps réel (documents, messages, CRM, campagnes).</p>
+                </div>
+              </div>
+              <div class="stat-grid">
+                <div class="stat-card">
+                  <div class="label">Documents</div>
+                  <div id="anDocs" class="metric-value">0</div>
+                </div>
+                <div class="stat-card">
+                  <div class="label">Messages</div>
+                  <div id="anMessages" class="metric-value">0</div>
+                </div>
+                <div class="stat-card">
+                  <div class="label">Contacts</div>
+                  <div id="anContacts" class="metric-value">0</div>
+                </div>
+                <div class="stat-card">
+                  <div class="label">Deals</div>
+                  <div id="anDeals" class="metric-value">0</div>
+                </div>
+                <div class="stat-card">
+                  <div class="label">Campagnes</div>
+                  <div id="anCampaigns" class="metric-value">0</div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header">
+                  <h2 class="panel-title">Stratégie WhatsApp</h2>
+                </div>
+                <div class="panel-body">
+                  <pre id="waStrategy" class="mb-0 p-3 rounded" style="background: #f8fff9; border: 1px solid rgba(18, 76, 34, 0.12)"></pre>
+                </div>
+              </div>
+            </section>
+
+            <section class="view-panel" data-view="playground">
+              <div class="panel">
+                <div class="panel-header">
+                  <h2 class="panel-title">Playground · test sans WhatsApp</h2>
+                  <button id="sandboxReset" type="button" class="btn btn-sm btn-outline-danger">
+                    Réinitialiser le chat test
+                  </button>
+                </div>
+                <div class="panel-body">
+                  <div class="sandbox-shell">
+                    <div class="sandbox-toolbar">
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="fw-semibold">Simulation</span>
+                        <span class="subtitle small mb-0">Même modèle &amp; base que le bot</span>
+                      </div>
+                      <div class="sandbox-badge">IA test</div>
+                    </div>
+                    <div class="sandbox-chat-header">
+                      <div class="sandbox-chat-user">
+                        <span class="avatar-circle">IA</span>
+                        <div>
+                          <div class="name">Assistant</div>
+                          <div class="state">En ligne</div>
+                        </div>
+                      </div>
+                      <div class="subtitle small mb-0">Mode bac à sable</div>
+                    </div>
+                    <div class="sandbox-chat-wrap">
+                      <div id="sandboxChat" class="sandbox-chat mb-2"></div>
+                      <div id="sandboxResources" class="subtitle mb-0 small"></div>
+                    </div>
+                    <div class="sandbox-inputbar">
+                      <div class="input-group">
+                        <input id="sandboxInput" class="form-control" placeholder="Écris un message…" />
+                        <button id="sandboxSend" type="button" class="btn btn-primary px-3">Envoyer</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="view-panel" data-view="settings">
+              <div class="panel">
+                <div class="panel-header">
+                  <h2 class="panel-title">Paramètres IA</h2>
+                  <button id="saveSettings" type="button" class="btn btn-sm btn-primary">Enregistrer</button>
+                </div>
+                <div class="panel-body">
+                  <div class="row g-3">
+                    <div class="col-md-4 col-lg-3">
+                      <label class="form-label">Provider</label>
+                      <select id="provider" class="form-select">
+                        <option value="groq">Groq</option>
+                        <option value="openai">OpenAI</option>
+                        <option value="gemini">Gemini</option>
+                        <option value="openrouter">OpenRouter</option>
+                        <option value="localai">LocalAI</option>
+                      </select>
+                    </div>
+                    <div class="col-md-5 col-lg-4">
+                      <label class="form-label">Modèle</label>
+                      <input id="model" class="form-control" />
+                    </div>
+                    <div class="col-6 col-md-2 col-lg-2">
+                      <label class="form-label">Température</label>
+                      <input id="temperature" type="number" step="0.1" class="form-control" />
+                    </div>
+                    <div class="col-6 col-md-2 col-lg-2">
+                      <label class="form-label">Top K RAG</label>
+                      <input id="top_k" type="number" class="form-control" />
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-2">
+                      <label class="form-label">Délai min (ms)</label>
+                      <input id="human_delay_min_ms" type="number" class="form-control" />
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-2">
+                      <label class="form-label">Délai max (ms)</label>
+                      <input id="human_delay_max_ms" type="number" class="form-control" />
+                    </div>
+                    <div class="col-12">
+                      <p class="subtitle small mb-0">
+                        Délai humain : attente <strong>avant</strong> la première bulle de réponse WhatsApp.
+                      </p>
+                    </div>
+                    <div class="col-12">
+                      <hr class="border-secondary opacity-25 my-1" />
+                      <p class="subtitle small mb-2">
+                        Réponses WhatsApp : découpage automatique en plusieurs messages (indépendant du system prompt).
+                      </p>
+                    </div>
+                    <div class="col-6 col-md-3">
+                      <label class="form-label">Phrases min / message</label>
+                      <input id="reply_chunk_min_sentences" type="number" min="1" max="10" class="form-control" />
+                    </div>
+                    <div class="col-6 col-md-3">
+                      <label class="form-label">Phrases max / message</label>
+                      <input id="reply_chunk_max_sentences" type="number" min="1" max="10" class="form-control" />
+                    </div>
+                    <div class="col-6 col-md-3">
+                      <label class="form-label">Pause min (ms)</label>
+                      <input id="reply_chunk_delay_min_ms" type="number" class="form-control" />
+                    </div>
+                    <div class="col-6 col-md-3">
+                      <label class="form-label">Pause max (ms)</label>
+                      <input id="reply_chunk_delay_max_ms" type="number" class="form-control" />
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label">System prompt</label>
+                      <textarea id="system_prompt" class="form-control" rows="8"></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="view-panel" data-view="logs">
+              <div class="panel">
+                <div class="panel-header">
+                  <h2 class="panel-title">Logs applicatifs</h2>
+                </div>
+                <div class="panel-body">
+                  <pre id="logs" class="p-3 rounded mb-0" style="max-height: min(55vh, 480px); overflow: auto"></pre>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div id="appToast" class="toast text-bg-dark border border-secondary-subtle" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-body" id="toastMsg">Prêt</div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const toastEl = document.getElementById("appToast");
+      const toast = new bootstrap.Toast(toastEl, { delay: 2500 });
+      const qrImage = document.getElementById("qrImage");
+
+      const VIEW_META = {
+        overview: { title: "Aperçu", crumb: "Tableau de bord · temps réel" },
+        whatsapp: { title: "Connexion WhatsApp", crumb: "QR et session" },
+        knowledge: { title: "Base de connaissances", crumb: "Ingestion et documents" },
+        conversations: { title: "Conversations", crumb: "Historique stocké en local" },
+        crm: { title: "CRM Leads", crumb: "Contacts et pipeline commercial" },
+        billing: { title: "Billing", crumb: "Abonnements et événements paiement" },
+        analytics: { title: "Analytics", crumb: "Pilotage tenant et stratégie WhatsApp" },
+        playground: { title: "Playground", crumb: "Test du modèle sans WhatsApp" },
+        settings: { title: "Paramètres IA", crumb: "Provider, prompt, délais" },
+        logs: { title: "Logs", crumb: "Événements récents" },
+      };
+
+      function setActiveView(view) {
+        const meta = VIEW_META[view];
+        if (!meta) return;
+        document.querySelectorAll(".view-panel").forEach((el) => {
+          el.classList.toggle("active", el.getAttribute("data-view") === view);
+        });
+        document.querySelectorAll(".sidebar-nav .nav-item").forEach((btn) => {
+          btn.classList.toggle("active", btn.getAttribute("data-view") === view);
+        });
+        const titleEl = document.getElementById("mainViewTitle");
+        const crumbEl = document.getElementById("mainViewCrumb");
+        if (titleEl) titleEl.textContent = meta.title;
+        if (crumbEl) crumbEl.textContent = meta.crumb;
+        document.getElementById("appSidebar")?.classList.remove("open");
+      }
+
+      document.querySelectorAll(".sidebar-nav .nav-item").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const view = btn.getAttribute("data-view");
+          if (view) setActiveView(view);
+        });
+      });
+
+      document.getElementById("sidebarToggle")?.addEventListener("click", () => {
+        document.getElementById("appSidebar")?.classList.toggle("open");
+      });
+
+      document.getElementById("btnRefreshAll")?.addEventListener("click", () => {
+        refreshAll().catch((error) => notify(error.message, true));
+      });
+
+      document.getElementById("btnLogout")?.addEventListener("click", async () => {
+        try {
+          await api("/api/auth/logout", { method: "POST" });
+        } catch (_e) {}
+        window.location.href = "/login";
+      });
+
+      const providerDefaultModel = {
+        groq: "llama-3.3-70b-versatile",
+        openai: "gpt-4o-mini",
+        gemini: "gemini-2.0-flash",
+        openrouter: "openai/gpt-4o-mini",
+        localai: "llama-3.1-8b-instruct",
+      };
+      let editingContactId = null;
+
+      function notify(message, isError = false) {
+        const body = document.getElementById("toastMsg");
+        body.textContent = message;
+        toastEl.classList.toggle("text-bg-danger", isError);
+        toastEl.classList.toggle("text-bg-dark", !isError);
+        toast.show();
+      }
+
+      async function api(url, options) {
+        const res = await fetch(url, options);
+        if (res.status === 401) {
+          window.location.href = "/login";
+          throw new Error("Non authentifié.");
+        }
+        const contentType = res.headers.get("content-type") || "";
+        let data;
+        if (contentType.includes("application/json")) {
+          data = await res.json();
+        } else {
+          const text = await res.text();
+          throw new Error(
+            `Réponse invalide du serveur (${res.status}). Vérifie que le bot est redémarré.`
+          );
+        }
+        if (!res.ok) throw new Error(data.error || "Erreur API");
+        return data;
+      }
+
+      async function refreshStatus() {
+        const status = await api("/api/status");
+        const isReady = status.whatsappReady;
+        document.getElementById("statusBot").textContent = isReady
+          ? "Connecté"
+          : "En attente de connexion";
+        document.getElementById("statusDocs").textContent = `${status.documents} documents indexés`;
+        const pill = document.getElementById("statusPill");
+        pill.className = `status-pill ${isReady ? "status-on" : "status-off"}`;
+        pill.innerHTML = `<span class="dot"></span><span>${isReady ? "WhatsApp connecté" : "WhatsApp déconnecté"}</span>`;
+        const overviewBadge = document.getElementById("overviewConnectionBadge");
+        if (overviewBadge) {
+          overviewBadge.textContent = isReady ? "● WhatsApp connecté" : "● WhatsApp déconnecté";
+          overviewBadge.style.background = isReady
+            ? "rgba(132, 228, 96, 0.2)"
+            : "rgba(248, 113, 113, 0.2)";
+          overviewBadge.style.borderColor = isReady
+            ? "rgba(132, 228, 96, 0.4)"
+            : "rgba(248, 113, 113, 0.48)";
+        }
+        const refreshLabel = document.getElementById("overviewLastRefresh");
+        if (refreshLabel) {
+          refreshLabel.textContent = `Dernière mise à jour: ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+        }
+        const strategy = document.getElementById("waStrategy");
+        if (strategy) {
+          strategy.textContent = JSON.stringify(
+            {
+              dbDialect: status.dbDialect,
+              waMode: status.waMode,
+              hasRedis: status.hasRedis,
+              organizationId: status.organizationId,
+            },
+            null,
+            2
+          );
+        }
+      }
+
+      async function refreshTenants() {
+        const result = await api("/api/tenants/me");
+        const select = document.getElementById("tenantSelect");
+        const current = Number(result.currentOrganizationId || 0);
+        select.innerHTML = "";
+        (result.organizations || []).forEach((org) => {
+          const option = document.createElement("option");
+          option.value = String(org.id);
+          option.textContent = `${org.name} (${org.plan})`;
+          if (Number(org.id) === current) option.selected = true;
+          select.appendChild(option);
+        });
+      }
+
+      async function refreshCrm() {
+        const [contactsRes, dealsRes] = await Promise.all([
+          api("/api/crm/contacts"),
+          api("/api/crm/pipeline"),
+        ]);
+        const contactsTbody = document.getElementById("crmContactsTable");
+        contactsTbody.innerHTML = "";
+        (contactsRes.contacts || []).forEach((c) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${c.phone || "-"}</td>
+            <td>${c.name || "-"}</td>
+            <td>${c.status || "-"}</td>
+            <td>${c.tags || "-"}</td>
+            <td class="text-end">
+              <div class="crm-actions">
+                <button type="button" class="btn btn-sm btn-outline-light crm-edit">Modifier</button>
+                <button type="button" class="btn btn-sm btn-outline-danger crm-delete">Supprimer</button>
+              </div>
+            </td>
+          `;
+          tr.querySelector(".crm-edit").onclick = () => startCrmEdit(c);
+          tr.querySelector(".crm-delete").onclick = async () => {
+            if (!confirm(`Supprimer le contact ${c.name || c.phone} ?`)) return;
+            await api("/api/crm/contacts/" + c.id, { method: "DELETE" });
+            if (editingContactId === c.id) resetCrmForm();
+            await refreshCrm();
+            await refreshAnalytics();
+            notify("Contact supprimé.");
+          };
+          contactsTbody.appendChild(tr);
+        });
+        if (!contactsRes.contacts?.length) {
+          contactsTbody.innerHTML = `<tr><td colspan="5" class="text-center subtitle">Aucun lead.</td></tr>`;
+        }
+
+        const dealsTbody = document.getElementById("crmDealsTable");
+        dealsTbody.innerHTML = "";
+        (dealsRes.deals || []).forEach((d) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${d.name || d.phone || "-"}</td>
+            <td>${d.pipeline_stage || "-"}</td>
+            <td>${Number(d.value_amount || 0).toFixed(0)} ${d.currency || "USD"}</td>
+            <td><button class="btn btn-sm btn-outline-light">Étape suivante</button></td>
+          `;
+          tr.querySelector("button").onclick = async () => {
+            const next = prompt("Nouvelle étape du pipeline", d.pipeline_stage || "Qualifié");
+            if (!next) return;
+            await api("/api/crm/deals/" + d.id, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ pipeline_stage: next, note: "Mis à jour depuis dashboard" }),
+            });
+            await refreshCrm();
+            notify("Pipeline mis à jour.");
+          };
+          dealsTbody.appendChild(tr);
+        });
+        if (!dealsRes.deals?.length) {
+          dealsTbody.innerHTML = `<tr><td colspan="4" class="text-center subtitle">Aucun deal.</td></tr>`;
+        }
+      }
+
+      function startCrmEdit(contact) {
+        editingContactId = Number(contact.id);
+        document.getElementById("crmPhone").value = contact.phone || "";
+        document.getElementById("crmName").value = contact.name || "";
+        document.getElementById("crmTags").value = contact.tags || "";
+        document.getElementById("crmStatus").value = contact.status || "new";
+        const submitBtn = document.getElementById("crmCreateLead");
+        submitBtn.textContent = "Mettre à jour le contact";
+        document.getElementById("crmCancelEdit").classList.remove("d-none");
+      }
+
+      function resetCrmForm() {
+        editingContactId = null;
+        document.getElementById("crmPhone").value = "";
+        document.getElementById("crmName").value = "";
+        document.getElementById("crmTags").value = "";
+        document.getElementById("crmStatus").value = "new";
+        document.getElementById("crmCreateLead").textContent = "Créer lead";
+        document.getElementById("crmCancelEdit").classList.add("d-none");
+      }
+
+      async function refreshBilling() {
+        const data = await api("/api/billing/subscription");
+        const current = document.getElementById("billingCurrent");
+        if (!data.subscription) {
+          current.textContent = "Aucun abonnement actif.";
+        } else {
+          current.textContent = `${data.subscription.provider} · plan=${data.subscription.plan_code} · statut=${data.subscription.status}`;
+        }
+        const tbody = document.getElementById("billingEventsTable");
+        tbody.innerHTML = "";
+        (data.recentEvents || []).forEach((e) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${e.created_at ? new Date(e.created_at).toLocaleString() : "-"}</td>
+            <td>${e.provider}</td>
+            <td>${e.event_type}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+        if (!data.recentEvents?.length) {
+          tbody.innerHTML = `<tr><td colspan="3" class="text-center subtitle">Aucun événement.</td></tr>`;
+        }
+      }
+
+      async function refreshAnalytics() {
+        const data = await api("/api/analytics/overview");
+        const m = data.metrics || {};
+        document.getElementById("anDocs").textContent = m.documents ?? 0;
+        document.getElementById("anMessages").textContent = m.messages ?? 0;
+        document.getElementById("anContacts").textContent = m.contacts ?? 0;
+        document.getElementById("anDeals").textContent = m.deals ?? 0;
+        document.getElementById("anCampaigns").textContent = m.campaigns ?? 0;
+        try {
+          const strategy = await api("/api/whatsapp/strategy");
+          document.getElementById("waStrategy").textContent = JSON.stringify(strategy, null, 2);
+        } catch (_error) {}
+      }
+
+      async function refreshWhatsAppQr() {
+        const wa = await api("/api/whatsapp/qr");
+        const help = document.getElementById("waHelp");
+        const meta = document.getElementById("qrMeta");
+        if (wa.whatsappReady) {
+          qrImage.src =
+            "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSczMDAnIGhlaWdodD0nMzAwJz48cmVjdCB3aWR0aD0nMTAwJScgaGVpZ2h0PScxMDAlJyBmaWxsPSd3aGl0ZScvPjx0ZXh0IHg9JzUwJScgeT0nNTAlJyBmb250LXNpemU9JzE4JyBmb250LWZhbWlseT0nQXJpYWwnIGZpbGw9JyMwYTJhNjYnIHRleHQtYW5jaG9yPSdtaWRkbGUnPkNvbm5lY3TDqTwvdGV4dD48L3N2Zz4=";
+          help.textContent = "WhatsApp est connecté. Clique sur Déconnexion pour relancer une connexion par QR.";
+          meta.textContent = "";
+          return;
+        }
+        if (wa.qrImage) {
+          qrImage.src = wa.qrImage;
+          help.textContent = "Scanne ce QR avec WhatsApp > Appareils connectés > Connecter un appareil.";
+          meta.textContent = wa.qrUpdatedAt
+            ? `QR généré à ${new Date(wa.qrUpdatedAt).toLocaleTimeString()}`
+            : "";
+          return;
+        }
+        qrImage.removeAttribute("src");
+        if (wa.lastInitError) {
+          help.textContent =
+            "Le QR ne peut pas être généré tant que le moteur Chrome de WhatsApp n'est pas disponible.";
+          meta.textContent =
+            "Installe Chrome/Puppeteer (npx puppeteer browsers install chrome) ou configure CHROME_EXECUTABLE_PATH, puis clique sur Actualiser QR.";
+          return;
+        }
+        help.textContent = "QR en attente... Clique sur Actualiser QR.";
+        meta.textContent = "";
+      }
+
+      async function refreshSettings() {
+        const s = await api("/api/settings");
+        document.getElementById("provider").value = s.provider || "groq";
+        document.getElementById("model").value = s.model;
+        document.getElementById("temperature").value = s.temperature;
+        document.getElementById("top_k").value = s.top_k;
+        document.getElementById("human_delay_min_ms").value = s.human_delay_min_ms ?? 10000;
+        document.getElementById("human_delay_max_ms").value = s.human_delay_max_ms ?? 15000;
+        document.getElementById("reply_chunk_min_sentences").value = s.reply_chunk_min_sentences ?? 2;
+        document.getElementById("reply_chunk_max_sentences").value = s.reply_chunk_max_sentences ?? 3;
+        document.getElementById("reply_chunk_delay_min_ms").value = s.reply_chunk_delay_min_ms ?? 5000;
+        document.getElementById("reply_chunk_delay_max_ms").value = s.reply_chunk_delay_max_ms ?? 6000;
+        document.getElementById("system_prompt").value = s.system_prompt;
+      }
+
+      async function refreshDocs() {
+        const docs = await api("/api/documents");
+        const tbody = document.getElementById("docsTable");
+        tbody.innerHTML = "";
+        docs.forEach((d) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${d.id}</td>
+            <td>${d.title}</td>
+            <td>${d.source_type}</td>
+            <td class="text-truncate" style="max-width: 300px">${d.source}</td>
+            <td><button class="btn btn-sm btn-danger" data-id="${d.id}">Supprimer</button></td>
+          `;
+          tr.querySelector("button").onclick = async () => {
+            await api("/api/documents/" + d.id, { method: "DELETE" });
+            await refreshAll();
+          };
+          tbody.appendChild(tr);
+        });
+      }
+
+      async function refreshLogs() {
+        const items = await api("/api/logs");
+        document.getElementById("logs").textContent = items
+          .map((l) => `[${l.ts}] ${l.level.toUpperCase()} - ${l.message} ${JSON.stringify(l.meta)}`)
+          .join("\n");
+      }
+
+      async function refreshConversations() {
+        const rows = await api("/api/conversations");
+        const tbody = document.getElementById("conversationsTable");
+        tbody.innerHTML = "";
+        if (!rows.length) {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td colspan="4" class="text-center subtitle">Aucun historique de conversation.</td>`;
+          tbody.appendChild(tr);
+          return;
+        }
+        rows.forEach((row) => {
+          const tr = document.createElement("tr");
+          const lastAt = row.last_message_at ? new Date(row.last_message_at + "Z").toLocaleString() : "-";
+          tr.innerHTML = `
+            <td class="text-truncate" style="max-width: 320px">${row.chat_id}</td>
+            <td>${row.messages}</td>
+            <td>${lastAt}</td>
+            <td><button class="btn btn-sm btn-outline-danger">Vider</button></td>
+          `;
+          tr.querySelector("button").onclick = async () => {
+            if (!confirm(`Supprimer l'historique de ce contact ?\n${row.chat_id}`)) return;
+            await api("/api/conversations/" + encodeURIComponent(row.chat_id), {
+              method: "DELETE",
+            });
+            await refreshConversations();
+            notify("Historique du contact supprimé.");
+          };
+          tbody.appendChild(tr);
+        });
+      }
+
+      function renderSandboxHistory(history) {
+        const box = document.getElementById("sandboxChat");
+        box.innerHTML = "";
+        const separator = document.createElement("div");
+        separator.className = "d-flex justify-content-center";
+        separator.innerHTML = `<span class="chat-day-sep">Aujourd'hui</span>`;
+        box.appendChild(separator);
+        if (!history.length) {
+          const empty = document.createElement("div");
+          empty.className = "subtitle text-center";
+          empty.textContent = "Aucun message pour le moment. Lance un test.";
+          box.appendChild(empty);
+          return;
+        }
+        history.forEach((item) => {
+          const row = document.createElement("div");
+          row.className = `chat-row ${item.role}`;
+          const bubble = document.createElement("div");
+          bubble.className = "chat-bubble";
+          bubble.innerHTML = `${item.content}<span class="chat-time">${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>`;
+          row.appendChild(bubble);
+          box.appendChild(row);
+        });
+        box.scrollTop = box.scrollHeight;
+      }
+
+      async function refreshSandbox() {
+        const result = await api("/api/sandbox/history");
+        renderSandboxHistory(result.history || []);
+      }
+
+      async function refreshAll() {
+        await Promise.all([
+          refreshTenants(),
+          refreshStatus(),
+          refreshSettings(),
+          refreshDocs(),
+          refreshConversations(),
+          refreshCrm(),
+          refreshBilling(),
+          refreshAnalytics(),
+          refreshSandbox(),
+          refreshLogs(),
+          refreshWhatsAppQr(),
+        ]);
+      }
+
+      document.getElementById("saveSettings").onclick = async () => {
+        try {
+          await api("/api/settings", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              provider: document.getElementById("provider").value,
+              model: document.getElementById("model").value,
+              temperature: document.getElementById("temperature").value,
+              top_k: document.getElementById("top_k").value,
+              human_delay_min_ms: document.getElementById("human_delay_min_ms").value,
+              human_delay_max_ms: document.getElementById("human_delay_max_ms").value,
+              reply_chunk_min_sentences: document.getElementById("reply_chunk_min_sentences").value,
+              reply_chunk_max_sentences: document.getElementById("reply_chunk_max_sentences").value,
+              reply_chunk_delay_min_ms: document.getElementById("reply_chunk_delay_min_ms").value,
+              reply_chunk_delay_max_ms: document.getElementById("reply_chunk_delay_max_ms").value,
+              system_prompt: document.getElementById("system_prompt").value,
+            }),
+          });
+          await refreshAll();
+          notify("Paramètres enregistrés.");
+        } catch (error) {
+          notify(error.message, true);
+        }
+      };
+
+      document.getElementById("provider").addEventListener("change", (event) => {
+        const provider = event.target.value;
+        const modelInput = document.getElementById("model");
+        const current = (modelInput.value || "").trim().toLowerCase();
+        const knownModels = Object.values(providerDefaultModel).map((v) => v.toLowerCase());
+        if (!current || knownModels.includes(current) || provider === "gemini" && !current.includes("gemini")) {
+          modelInput.value = providerDefaultModel[provider] || modelInput.value;
+        }
+      });
+
+      document.getElementById("addUrl").onclick = async () => {
+        try {
+          const url = document.getElementById("urlInput").value.trim();
+          if (!url) return;
+          await api("/api/ingest/url", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url }),
+          });
+          document.getElementById("urlInput").value = "";
+          await refreshAll();
+          notify("URL indexée avec succès.");
+        } catch (error) {
+          notify(error.message, true);
+        }
+      };
+
+      document.getElementById("addFile").onclick = async () => {
+        try {
+          const fileInput = document.getElementById("fileInput");
+          if (!fileInput.files.length) return;
+          const fd = new FormData();
+          fd.append("file", fileInput.files[0]);
+          await api("/api/ingest/file", { method: "POST", body: fd });
+          fileInput.value = "";
+          await refreshAll();
+          notify("Fichier indexé avec succès.");
+        } catch (error) {
+          notify(error.message, true);
+        }
+      };
+
+      document.getElementById("addSite").onclick = async () => {
+        try {
+          const url = document.getElementById("siteInput").value.trim();
+          const maxPages = Number(document.getElementById("siteMaxPages").value || 12);
+          if (!url) return;
+          const result = await api("/api/ingest/site", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url, maxPages }),
+          });
+          await refreshAll();
+          notify(`Site indexé: ${result.pagesIndexed} pages.`);
+        } catch (error) {
+          notify(error.message, true);
+        }
+      };
+
+      document.getElementById("refreshQr").onclick = async () => {
+        try {
+          await api("/api/whatsapp/restart-qr", { method: "POST" });
+          setTimeout(refreshWhatsAppQr, 1200);
+          notify("Nouveau QR en cours de génération...");
+        } catch (error) {
+          notify(error.message, true);
+        }
+      };
+
+      document.getElementById("disconnectWa").onclick = async () => {
+        try {
+          await api("/api/whatsapp/disconnect", { method: "POST" });
+          await refreshAll();
+          notify("Déconnexion demandée. Nouveau QR en cours...");
+        } catch (error) {
+          notify(error.message, true);
+        }
+      };
+
+      document.getElementById("clearAllConversations").onclick = async () => {
+        try {
+          if (!confirm("Supprimer tout l'historique des conversations ?")) return;
+          const result = await api("/api/conversations", { method: "DELETE" });
+          await refreshConversations();
+          notify(`Historique global supprimé (${result.deleted} messages).`);
+        } catch (error) {
+          notify(error.message, true);
+        }
+      };
+
+      document.getElementById("sandboxSend").onclick = async () => {
+        try {
+          const input = document.getElementById("sandboxInput");
+          const text = input.value.trim();
+          if (!text) return;
+          input.value = "";
+          const result = await api("/api/sandbox/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text }),
+          });
+          await refreshSandbox();
+          const resourcesEl = document.getElementById("sandboxResources");
+          if (result.resources?.length) {
+            resourcesEl.innerHTML = `Ressources suggérées: ${result.resources
+              .map((r) => `<a href="${r.source}" target="_blank" rel="noopener noreferrer">${r.title}</a>`)
+              .join(" | ")}`;
+          } else {
+            resourcesEl.textContent = "";
+          }
+        } catch (error) {
+          notify(error.message, true);
+        }
+      };
+
+      document.getElementById("sandboxInput").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          document.getElementById("sandboxSend").click();
+        }
+      });
+
+      document.getElementById("sandboxReset").onclick = async () => {
+        try {
+          await api("/api/sandbox/history", { method: "DELETE" });
+          await refreshSandbox();
+          document.getElementById("sandboxResources").textContent = "";
+          notify("Chat test réinitialisé.");
+        } catch (error) {
+          notify(error.message, true);
+        }
+      };
+
+      document.getElementById("tenantSelect").addEventListener("change", async (event) => {
+        try {
+          const organizationId = Number(event.target.value || 0);
+          if (!organizationId) return;
+          await api("/api/tenants/switch", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ organizationId }),
+          });
+          await refreshAll();
+          notify("Organisation active mise à jour.");
+        } catch (error) {
+          notify(error.message, true);
+        }
+      });
+
+      document.getElementById("crmCreateLead").onclick = async () => {
+        try {
+          const phone = document.getElementById("crmPhone").value.trim();
+          if (!phone) return;
+          const name = document.getElementById("crmName").value.trim();
+          const tags = document.getElementById("crmTags").value.trim();
+          const status = document.getElementById("crmStatus").value || "new";
+          const payload = { phone, name, tags, status };
+          const isEditing = Boolean(editingContactId);
+          if (isEditing) {
+            await api("/api/crm/contacts/" + editingContactId, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+          } else {
+            await api("/api/crm/contacts", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+          }
+          resetCrmForm();
+          await refreshCrm();
+          await refreshAnalytics();
+          notify(isEditing ? "Contact mis à jour." : "Lead créé.");
+        } catch (error) {
+          notify(error.message, true);
+        }
+      };
+
+      document.getElementById("crmCancelEdit").onclick = () => {
+        resetCrmForm();
+      };
+
+      document.getElementById("billingSubscribe").onclick = async () => {
+        try {
+          const provider = document.getElementById("billingProvider").value;
+          const planCode = document.getElementById("billingPlan").value;
+          await api("/api/billing/subscribe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ provider, planCode }),
+          });
+          await refreshBilling();
+          notify("Souscription enregistrée.");
+        } catch (error) {
+          notify(error.message, true);
+        }
+      };
+
+      refreshAll().catch((error) => notify(error.message, true));
+      setInterval(refreshStatus, 5000);
+      setInterval(refreshLogs, 5000);
+      setInterval(refreshWhatsAppQr, 5000);
+      setInterval(refreshConversations, 10000);
+    </script>
+  </body>
+</html>
