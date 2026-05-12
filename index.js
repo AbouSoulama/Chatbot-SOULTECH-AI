@@ -10,6 +10,7 @@ const multer = require("multer");
 const qrcode = require("qrcode-terminal");
 const QRCode = require("qrcode");
 const Groq = require("groq-sdk");
+const { toFile } = require("groq-sdk");
 const bcrypt = require("bcryptjs");
 const { Client, LocalAuth, MessageMedia } = require("whatsapp-web.js");
 const { open } = require("sqlite");
@@ -180,6 +181,124 @@ function addLog(level, message, meta = {}) {
   } else {
     console.log(message, meta);
   }
+}
+
+function isLikelyIncomingVoiceMessage(message) {
+  const t = String(message?.type || "");
+  return Boolean(message?.hasMedia) && (t === "ptt" || t === "audio");
+}
+
+function mimeFromFilePathGuess(filePath) {
+  const ext = path.extname(filePath || "").toLowerCase();
+  const map = {
+    ".pdf": "application/pdf",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".gif": "image/gif",
+    ".webp": "image/webp",
+    ".bmp": "image/bmp",
+    ".doc": "application/msword",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ".xls": "application/vnd.ms-excel",
+    ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ".ppt": "application/vnd.ms-powerpoint",
+    ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    ".txt": "text/plain",
+    ".csv": "text/csv",
+    ".json": "application/json",
+    ".md": "text/markdown",
+  };
+  return map[ext] || "application/octet-stream";
+}
+
+function suggestedExtensionFromMime(mime) {
+  const m = String(mime || "").toLowerCase();
+  if (m.includes("ogg")) return ".ogg";
+  if (m.includes("opus")) return ".ogg";
+  if (m.includes("mpeg")) return ".mp3";
+  if (m.includes("mp4")) return ".mp4";
+  if (m.includes("webm")) return ".webm";
+  if (m.includes("wav")) return ".wav";
+  return ".audio";
+}
+
+function resolveKnowledgeAssetAbsolutePath(assetFilePath) {
+  const raw = String(assetFilePath || "").trim();
+  if (!raw) return "";
+  const normalized = path.normalize(raw);
+  const absolute = path.isAbsolute(normalized) ? normalized : path.resolve(__dirname, normalized);
+  return absolute;
+}
+
+function mergeDedupKnowledgeAssets(primary, secondary) {
+  const merged = [];
+  const seen = new Set();
+  for (const row of [...(primary || []), ...(secondary || [])]) {
+    if (!row) continue;
+    const key = `${row.asset_type}:${row.source || ""}:${row.file_path || ""}:${row.title || ""}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    merged.push(row);
+  }
+  return merged;
+}
+
+async function transcribeAudioBuffer(buffer, hintFilename = "voice.ogg", hintMime = "audio/ogg") {
+  if (!buffer?.length) {
+    throw new Error("Segment audio vide.");
+  }
+  if (groq && hasUsableApiKey(GROQ_API_KEY)) {
+    const uploadable = await toFile(Buffer.from(buffer), hintFilename, {
+      type: hintMime || "application/octet-stream",
+    });
+    const result = await groq.audio.transcriptions.create({
+      file: uploadable,
+      model:
+        process.env.GROQ_STT_MODEL ||
+        process.env.GROQ_WHISPER_MODEL ||
+        "whisper-large-v3-turbo",
+      language:
+        process.env.STT_LANGUAGE ||
+        process.env.TRANSCRIPTION_LANGUAGE ||
+        "fr",
+      temperature: 0,
+    });
+    const text = String(result?.text || "").trim();
+    if (text) return text;
+  }
+  if (hasUsableApiKey(OPENAI_API_KEY) && typeof FormData !== "undefined" && typeof Blob !== "undefined") {
+    const form = new FormData();
+    form.append("model", process.env.OPENAI_STT_MODEL || "whisper-1");
+    form.append("file", new Blob([buffer], { type: hintMime || "application/octet-stream" }), hintFilename);
+    const res = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${OPENAI_API_KEY}` },
+      body: form,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data?.error?.message || `OpenAI STT (${res.status})`);
+    }
+    const text = String(data?.text || "").trim();
+    if (text) return text;
+  }
+  throw new Error(
+    "Transcription impossible: configure GROQ_API_KEY (recommandé) ou OPENAI_API_KEY pour les messages vocaux."
+  );
+}
+
+async function transcribeWhatsAppVoiceMessage(message) {
+  const media = await message.downloadMedia();
+  if (!media?.data) {
+    addLog("warn", "Message vocal sans flux média téléchargeable.");
+    return "";
+  }
+  const buf = Buffer.from(media.data, "base64");
+  const mime = media.mimetype || "audio/ogg";
+  const ext = suggestedExtensionFromMime(mime);
+  const filename = `wa-voice-${Date.now()}${ext}`;
+  return await transcribeAudioBuffer(buf, filename, mime);
 }
 
 function keywordScore(query, content) {
@@ -674,18 +793,22 @@ function isFileShareIntent(userText) {
   }
 
   const asksToSend =
-    /\b(envoie|envoyer|partage|partager|donne|donner|fournis|fournir|transmets|transmettre|joindre|joint)\b/.test(
+    /\b(envoie|envoyer|partage|partager|donne|donner|fournis|fournir|transmets|transmettre|joindre|joint|passe|passer|renvoie|renvoyer|transfere|transfère)\b/.test(
       text
     );
   const asksForFileType =
-    /\b(document|documents|fichier|fichiers|pdf|docx|image|images|photo|photos|affiche|affiches|flyer|flyers|brochure|brochures|catalogue|catalogues|programme|programmes|fiche|fiches)\b/.test(
+    /\b(document|documents|fichier|fichiers|piece jointe|pièce jointe|pieces jointes|pièces jointes|pdf|docx?|xlsx?|pptx?|png|jpe?g|gif|webp|image|images|photo|photos|captur(e)?|screenshot|affiche|affiches|flyer|flyers|brochure|brochures|catalogue|catalogues|programme|programmes|fiche|fiches|word|excel|powerpoint)\b/i.test(
       text
     );
   const directPatterns = [
     /peux[- ]?tu .*?(m'?envoyer|partager|donner|transmettre)/,
     /tu peux .*?(m'?envoyer|partager|donner|transmettre)/,
-    /j(?:e|')aimerais .*?(un|des) (document|fichier|pdf|image|affiche|flyer|brochure|catalogue)/,
-    /envoie[- ]?moi .*?(document|fichier|pdf|image|affiche|flyer|brochure|catalogue)/,
+    /j(?:e|')aimerais .*?(un|des|le|la|les) .*?(document|fichier|pdf|png|jpg|jpeg|docx?|excel|plaquette)/,
+    /envoie[- ]?moi .*?(document|fichier|pdf|png|jpg|jpeg|affiche|flyer|brochure|catalogue|plaquette)/,
+    /\bles?\s+(pdf|doc(x)?|fichiers?|documents?)\b/i,
+    /(besoin du|voir le|affiche le|consulte(z)? le).*?(pdf|fichier|document|plaquette)/,
+    /\b(can you|please) (send|share|give) .*?\b(file|pdf|document|attachment|picture|photo)\b/i,
+    /\.(pdf|png|jpg|jpeg|docx|xlsx)(\s|,|$)/i.test(text),
   ];
   if (directPatterns.some((pattern) => pattern.test(text))) return true;
 
@@ -706,19 +829,20 @@ function shouldShareAssets(userText) {
     return false;
   }
 
-  const asksToSend = /\b(envoie|envoyer|partage|partager|donne|donner|fournis|fournir|transmets|transmettre)\b/.test(
-    text
-  );
+  const asksToSend =
+    /\b(envoie|envoyer|partage|partager|donne|donner|fournis|fournir|transmets|transmettre|passe|passer)\b/.test(
+      text
+    );
   const asksForResourceType =
-    /\b(lien|liens|url|source|sources|document|documents|fichier|fichiers|pdf|docx|image|images|photo|photos)\b/.test(
+    /\b(lien|liens|url|source|sources|document|documents|fichier|fichiers|pdf|docx|xlsx|image|images|photo|photos|captur)\b/i.test(
       text
     );
   const directPatterns = [
     /peux[- ]?tu .*?(m'?envoyer|partager|donner)/,
     /tu peux .*?(m'?envoyer|partager|donner)/,
-    /j(?:e|')aimerais .*?(un|des) (lien|liens|document|documents|fichier|fichiers|pdf)/,
-    /donne[- ]?moi .*?(lien|liens|source|sources|document|documents|fichier|fichiers|pdf)/,
-    /envoie[- ]?moi .*?(lien|liens|document|documents|fichier|fichiers|pdf)/,
+    /j(?:e|')aimerais .*?(un|des|la|les) .*?(lien|document|documents|fichier|pdf|captur)/,
+    /donne[- ]?moi .*?(lien|source|document|fichiers?|pdf|png|jpg)/,
+    /envoie[- ]?moi .*?(lien|document|fichiers?|pdf|png|captur)/,
   ];
   if (directPatterns.some((pattern) => pattern.test(text))) return true;
 
@@ -726,8 +850,12 @@ function shouldShareAssets(userText) {
 }
 
 async function sendKnowledgeAssets(client, chatId, assets) {
+  const maxSend = Math.min(
+    Math.max(Number(process.env.MAX_KNOWLEDGE_ASSETS_PER_MESSAGE || 4), 1),
+    8
+  );
   const sent = [];
-  for (const asset of assets.slice(0, 3)) {
+  for (const asset of assets.slice(0, maxSend)) {
     if (asset.asset_type === "url") {
       await client.sendMessage(chatId, `Lien utile: ${asset.source}`);
       sent.push({ id: asset.id, type: "url", value: asset.source });
@@ -735,21 +863,38 @@ async function sendKnowledgeAssets(client, chatId, assets) {
     }
     if (asset.asset_type === "file" && asset.file_path) {
       try {
-        const absolutePath = path.isAbsolute(asset.file_path)
-          ? asset.file_path
-          : path.join(__dirname, asset.file_path);
-        const fileExists = fsSync.existsSync(absolutePath);
-        if (!fileExists) {
+        const absolutePath = resolveKnowledgeAssetAbsolutePath(asset.file_path);
+        if (!absolutePath || !fsSync.existsSync(absolutePath)) {
           addLog("error", "Fichier knowledge introuvable sur disque.", {
             assetId: asset.id,
-            path: absolutePath,
+            path: asset.file_path,
+            resolvedPath: absolutePath || null,
           });
           continue;
         }
-        const media = MessageMedia.fromFilePath(absolutePath);
-        const sendAsDocument = !String(asset.mime_type || "").startsWith("image/");
+        const ext = path.extname(absolutePath).toLowerCase();
+
+        let media = null;
+        try {
+          media = MessageMedia.fromFilePath(absolutePath);
+        } catch (_fallbackError) {
+          const inferred =
+            mimeFromFilePathGuess(absolutePath) ||
+            String(asset.mime_type || "").trim() ||
+            "application/octet-stream";
+          const b64 = fsSync.readFileSync(absolutePath, { encoding: "base64" });
+          media = new MessageMedia(inferred, b64, path.basename(absolutePath));
+        }
+
+        const mimeEffective =
+          String(asset.mime_type || "").trim() ||
+          String(media?.mimetype || "").trim() ||
+          mimeFromFilePathGuess(absolutePath);
+        const forceDocumentExt = /\.(pdf|docx?|xlsx?|pptx?|csv|txt|json|zip|rar|7z|md)$/i.test(ext);
+        const sendAsDocument = forceDocumentExt || !/^image\//i.test(mimeEffective);
+
         await client.sendMessage(chatId, media, {
-          caption: asset.title || "Document demandé",
+          caption: (asset.title || path.basename(absolutePath) || "Document").slice(0, 950),
           sendMediaAsDocument: sendAsDocument,
         });
         sent.push({ id: asset.id, type: "file", value: absolutePath });
@@ -2273,11 +2418,14 @@ async function startServer(waRef) {
 
   app.post("/api/voice/transcribe", requireTenant, upload.single("audio"), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: "Fichier audio manquant." });
-    return res.json({
-      ok: true,
-      transcript:
-        "Transcription placeholder: branche STT prête. Connecter Whisper/OpenAI/Groq pour la production.",
-    });
+    try {
+      const filename = req.file.originalname || "upload.webm";
+      const mime = req.file.mimetype || "application/octet-stream";
+      const text = await transcribeAudioBuffer(req.file.buffer, filename, mime);
+      return res.json({ ok: true, transcript: text });
+    } catch (error) {
+      return res.status(400).json({ error: error.message || "Transcription impossible." });
+    }
   });
 
   app.get("/api/analytics/overview", requireTenant, async (req, res) => {
@@ -2559,8 +2707,25 @@ function attachWhatsAppHandlers(client, waRef) {
       activeChatReplies.add(chatId);
       markMessageAsProcessed(messageId);
 
-      const userText = (message.body || "").trim();
-      if (!userText) return;
+      let userText = (message.body || "").trim();
+      if (isLikelyIncomingVoiceMessage(message)) {
+        try {
+          const transcript = await transcribeWhatsAppVoiceMessage(message);
+          userText = [userText, transcript].filter(Boolean).join("\n").trim();
+        } catch (sttError) {
+          addLog("error", "Transcription vocal WhatsApp impossible.", {
+            chatId,
+            error: sttError.message,
+          });
+          await message.reply(
+            "Je n'arrive pas à décoder ton message vocal. Vérifie que GROQ_API_KEY est bien configurée dans le fichier .env, puis redémarre le serveur. Tu peux aussi écrire en texte."
+          );
+          return;
+        }
+      }
+      if (!userText) {
+        return;
+      }
       const organizationId = await ensureDefaultOrganization();
 
       await addConversationMessage(chatId, "user", userText, organizationId);
@@ -2568,7 +2733,7 @@ function attachWhatsAppHandlers(client, waRef) {
       const result = await generateAssistantResponse(userText, chatId, organizationId);
       const assistantReply = result.assistantReply;
       const shareableAssets = result.shareableAssets;
-      const fileShareCandidates = await findFileAssetsForShare(userText, 3, organizationId);
+      const fileShareCandidates = await findFileAssetsForShare(userText, 6, organizationId);
       const humanDelayMs = pickHumanDelayMs(result.settings);
       if (humanDelayMs > 0) {
         addLog("info", "Délai humain avant réponse.", {
@@ -2586,15 +2751,29 @@ function attachWhatsAppHandlers(client, waRef) {
         result.settings
       );
       let sentAssets = [];
-      const wantsAssets = shouldShareAssets(userText) || isFileShareIntent(userText);
-      if (wantsAssets && shareableAssets.length) {
+      const fileShareIntentDetected = isFileShareIntent(userText);
+      const wantsAnyKnowledgeShare = shouldShareAssets(userText) || fileShareIntentDetected;
+      if (wantsAnyKnowledgeShare && (shareableAssets.length || fileShareCandidates.length)) {
         if (chunkCount > 0) {
           await sleep(pickChunkDelayMs(result.settings));
         }
-        sentAssets = await sendKnowledgeAssets(client, chatId, shareableAssets);
-      }
-      if (wantsAssets && sentAssets.length === 0 && fileShareCandidates.length) {
-        sentAssets = await sendKnowledgeAssets(client, chatId, fileShareCandidates);
+        const bundle = mergeDedupKnowledgeAssets(
+          fileShareIntentDetected ? fileShareCandidates : [],
+          shareableAssets
+        );
+        sentAssets = await sendKnowledgeAssets(client, chatId, bundle);
+        const fileSent = sentAssets.filter((item) => item.type === "file").length;
+        if (
+          fileShareIntentDetected &&
+          fileShareCandidates.length &&
+          fileSent === 0
+        ) {
+          addLog(
+            "warn",
+            "Demande de fichier détectée mais aucun fichier n'a été envoyé (disque MIME ou permissions).",
+            { chatId, candidatePaths: fileShareCandidates.map((c) => c.file_path) }
+          );
+        }
       }
       const counselorNotified = await notifyCounselorFromContextIfNeeded(
         client,
